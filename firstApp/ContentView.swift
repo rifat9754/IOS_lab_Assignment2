@@ -14,12 +14,22 @@ struct ContentView: View {
     
     @State private var email = ""
     @State private var password = ""
+    @State private var userIsLoggedIn = false
     
     var body: some View {
+        if userIsLoggedIn{
+            //go somewhere
+            ListView()
+        } else {
+            content
+        }
+    }
+    
+    var content: some View {
         ZStack {
             Color.black
             RoundedRectangle(cornerRadius: 30, style: .continuous)
-                .foregroundStyle(.linearGradient(colors: [.pink, .red], startPoint: .topLeading, endPoint: .bottomTrailing))
+                .foregroundStyle(.linearGradient(colors: [.blue, .green], startPoint: .topLeading, endPoint: .bottomTrailing))
                 .frame(width: 1000, height: 400)
                 .rotationEffect(.degrees(135))
                 .offset(y: -350)
@@ -67,7 +77,7 @@ struct ContentView: View {
                         .frame(width: 200,height: 40)
                         .background(
                             RoundedRectangle(cornerRadius:  10,style: .continuous)
-                                .fill(.linearGradient(colors: [.pink, .red], startPoint: .top, endPoint: .bottomTrailing))
+                                .fill(.linearGradient(colors: [.green, .blue], startPoint: .top, endPoint: .bottomTrailing))
                         )
                         .foregroundColor(.white)
                 }
@@ -87,16 +97,24 @@ struct ContentView: View {
                     .offset(y: 110)
             }
             .frame(width: 350)
+           /* .onAppear {
+                Auth.auth().addStateDidChangeListener { auth, user in
+                    if user != nil {
+                        userIsLoggedIn.toggle()
+                    }
+                }
+            } */
         }
         .ignoresSafeArea()
         
     }
     
-        func login() {
+     /*   func login() {
             Auth.auth().signIn(withEmail: email, password: password) { result, error in
-                if let error = error {
-                    print(error.localizedDescription)
+                if  error != nil {
+                    print(error!.localizedDescription)
                 }
+                
             }
         }
 
@@ -106,6 +124,27 @@ struct ContentView: View {
             result, error in
             if error != nil {
                 print(error!.localizedDescription)
+            }
+        }
+    } */
+    
+    // Authentication Functions
+    func login() {
+        Auth.auth().signIn(withEmail: email, password: password) { result, error in
+            if let error = error {
+                print("Login error: \(error.localizedDescription)")
+            } else {
+                userIsLoggedIn = true
+            }
+        }
+    }
+    
+    func register() {
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+            if let error = error {
+                print("Registration error: \(error.localizedDescription)")
+            } else {
+                userIsLoggedIn = true
             }
         }
     }
